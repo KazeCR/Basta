@@ -1,5 +1,6 @@
 let timer = 60; // Tiempo en segundos
 let currentLetter = '';
+let countdownInterval; // Variable para almacenar el intervalo del temporizador
 let gameStarted = false;
 
 function startGame() {
@@ -15,23 +16,22 @@ function startGame() {
     document.getElementById('timer').innerText = `Tiempo restante: ${timer} segundos`;
 
     resetInputs();
-    countdown();
+    startCountdown();
   }
 }
 
-function countdown() {
-  const countdownInterval = setInterval(() => {
+function startCountdown() {
+  countdownInterval = setInterval(() => {
     timer--;
     document.getElementById('timer').innerText = `Tiempo restante: ${timer} segundos`;
 
     if (timer === 0) {
-      clearInterval(countdownInterval);
-      endGame();
+      handleBasta();
     }
   }, 1000);
 }
 
-function checkWords() {
+function handleBasta() {
   const inputs = document.querySelectorAll('input[type="text"]');
   let validWords = [];
 
@@ -39,19 +39,28 @@ function checkWords() {
     if (input.value.toLowerCase().startsWith(currentLetter.toLowerCase())) {
       validWords.push(input.value);
     }
-    input.disabled = true;
+    if (input.value === '' && timer > 0) {
+      input.disabled = false; // Habilitar campos vacíos si todavía hay tiempo
+    } else {
+      input.disabled = true;
+    }
   });
 
   const result = document.getElementById('result');
-  if (validWords.length === inputs.length) {
-    result.innerText = `¡Todas las categorias estan llenas! ¡Palabras validas: ${validWords.join(', ')}!`;
+  if ((validWords.length === inputs.length || timer === 0) && timer !== 0) {
+    clearInterval(countdownInterval); // Detener el temporizador
+    result.innerText = `¡Todas las categorias están llenas! ¡Palabras válidas: ${validWords.join(', ')}!`;
     document.getElementById('resetButton').style.display = 'block';
+    document.getElementById('bastaButton').disabled = true;
+  } else if (timer === 0) {
+    result.innerText = `Tiempo agotado. ¡Palabras válidas: ${validWords.join(', ')}!`;
+    document.getElementById('resetButton').style.display = 'block';
+    document.getElementById('bastaButton').disabled = true;
   } else {
     result.innerText = '¡Faltan categorias por llenar!';
   }
-
-  document.getElementById('bastaButton').disabled = true;
 }
+
 
 function resetGame() {
   resetInputs();
@@ -69,12 +78,8 @@ function resetInputs() {
   });
 }
 
-function endGame() {
-  document.getElementById('bastaButton').disabled = true;
-  document.getElementById('resetButton').style.display = 'block';
-}
-
 function getRandomLetter() {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   return alphabet.charAt(Math.floor(Math.random() * alphabet.length));
 }
+
