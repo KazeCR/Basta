@@ -1,17 +1,80 @@
+let timer = 60; // Tiempo en segundos
+let currentLetter = '';
+let gameStarted = false;
 
-SI(2<=RESIDUO($I4484,$K4484),((SI.ERROR((COLUMNAS($AD4484:AE4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AE4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0))+1),(SI.ERROR((COLUMNAS($AD4484:AE4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AE4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0))
+function startGame() {
+  if (!gameStarted) {
+    gameStarted = true;
 
-=SI(2<=RESIDUO($I4484,$K4484),SI.ERROR((COLUMNAS($AD4484:AE4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AE4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0)+1,SI.ERROR((COLUMNAS($AD4484:AE4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AE4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0))
+    document.getElementById('startButton').disabled = true;
+    document.getElementById('bastaButton').disabled = false;
+    document.getElementById('resetButton').style.display = 'none';
 
-=SI(2<=RESIDUO($I4484,$K4484),((SI.ERROR((COLUMNAS($AD4484:AE4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AE4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0))+1),(SI.ERROR((COLUMNAS($AD4484:AE4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AE4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0)))
+    currentLetter = getRandomLetter();
+    document.getElementById('letter').innerText = `Letra: ${currentLetter}`;
+    document.getElementById('timer').innerText = `Tiempo restante: ${timer} segundos`;
 
-=SI(3<=RESIDUO($I4484,$K4484),(SI.ERROR((COLUMNAS($AD4484:AF4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AF4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0))+1,SI.ERROR((COLUMNAS($AD4484:AF4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AF4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),))
+    resetInputs();
+    countdown();
+  }
+}
 
-=SI(2<=RESIDUO($I4484,$K4484),SI.ERROR((COLUMNAS($AD4484:AE4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AE4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0)+1,SI.ERROR((COLUMNAS($AD4484:AE4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AE4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0))
+function countdown() {
+  const countdownInterval = setInterval(() => {
+    timer--;
+    document.getElementById('timer').innerText = `Tiempo restante: ${timer} segundos`;
 
-=SI(5<=RESIDUO($I4484,$K4484),(SI.ERROR((COLUMNAS($AD4484:AH4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AH4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0))+1,(SI.ERROR((COLUMNAS($AD4484:AH4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AH4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0)))
+    if (timer === 0) {
+      clearInterval(countdownInterval);
+      endGame();
+    }
+  }, 1000);
+}
 
-=SI.ERROR((COLUMNAS($AD4484:AF4484)<=$K4484)*ENTERO($I4484/$K4484)+(COLUMNAS($AD4484:AF4484)<=REDONDEAR(RESIDUO($I4484/$K4484,1)*$K4484,))*REDONDEAR(RESIDUO($I4484/$K4484,1),),0)
+function checkWords() {
+  const inputs = document.querySelectorAll('input[type="text"]');
+  let validWords = [];
 
-=SI.ERROR(($B$1>=COLUMNS($B$2:B2))*(($A$2-($B$1-1)*$A$2/COLUMNS($B$2:B2))),0)
-=SI.ERROR((COLUMNAS($AD3674:AD3674)<=$K3674)*ENTERO($I3674/$K3674)+(COLUMNAS($AD3674:AD3674)<=REDONDEAR(RESIDUO($I3674/$K3674,1)*$K3674,))*REDONDEAR(RESIDUO($I3674/$K3674,1),),0)
+  inputs.forEach(input => {
+    if (input.value.toLowerCase().startsWith(currentLetter.toLowerCase())) {
+      validWords.push(input.value);
+    }
+    input.disabled = true;
+  });
+
+  const result = document.getElementById('result');
+  if (validWords.length === inputs.length) {
+    result.innerText = `¡Todas las categorias estan llenas! ¡Palabras validas: ${validWords.join(', ')}!`;
+    document.getElementById('resetButton').style.display = 'block';
+  } else {
+    result.innerText = '¡Faltan categorias por llenar!';
+  }
+
+  document.getElementById('bastaButton').disabled = true;
+}
+
+function resetGame() {
+  resetInputs();
+  document.getElementById('result').innerText = '';
+  document.getElementById('startButton').disabled = false;
+  gameStarted = false;
+  timer = 60;
+}
+
+function resetInputs() {
+  const inputs = document.querySelectorAll('input[type="text"]');
+  inputs.forEach(input => {
+    input.value = '';
+    input.disabled = false;
+  });
+}
+
+function endGame() {
+  document.getElementById('bastaButton').disabled = true;
+  document.getElementById('resetButton').style.display = 'block';
+}
+
+function getRandomLetter() {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  return alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+}

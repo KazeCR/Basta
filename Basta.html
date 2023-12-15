@@ -7,10 +7,21 @@
 <body>
   <h1>Basta Online</h1>
   <div id="game">
-    <p id="category"></p>
+    <p id="letter"></p>
     <p id="timer"></p>
-    <textarea id="input" placeholder="Escribe tus palabras aquí"></textarea>
-    <button onclick="checkWords()">¡Basta!</button>
+
+    <input type="text" id="nombreInput" placeholder="Nombre">
+    <input type="text" id="apellidoInput" placeholder="Apellido">
+    <input type="text" id="paisInput" placeholder="Lugar o pais">
+    <input type="text" id="animalInput" placeholder="Animal">
+    <input type="text" id="florInput" placeholder="Flor o fruto">
+    <input type="text" id="colorInput" placeholder="Color">
+    <input type="text" id="cosaInput" placeholder="Cosa">
+
+    <button id="startButton" onclick="startGame()">Comenzar</button>
+    <button id="bastaButton" onclick="checkWords()" disabled>¡Basta!</button>
+    <button id="resetButton" onclick="resetGame()" style="display: none;">Volver a Jugar</button>
+
     <p id="result"></p>
   </div>
   <script src="script.js"></script>
